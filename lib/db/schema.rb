@@ -11,4 +11,10 @@ ActiveRecord::Schema.define do
     table.column :ended_on,   :date
     table.column :status,     :string
   end
+
+ create_table :devs_in_each_month do |table|
+    table.column :year,    :integer
+    table.column :month,    :integer
+    table.column :devs_in_end,    :integer, default: 0
+  end
 end
