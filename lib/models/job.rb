@@ -1,6 +1,6 @@
 class Job < ActiveRecord::Base
   validates :started_on, presence: true
-  after_save :update_month_count
+  before_save :update_month_count
 
   def self.devs_started_this_month(year, month)
     Job.where({:started_on =>month_range(year, month)}).to_a.count
@@ -11,14 +11,21 @@ class Job < ActiveRecord::Base
   end
 
   def update_month_count
-    date = self.ended_on
-    DevsInEachMonth.where({year: date.year, month: date.month}).increment!(:devs_in_end) if new_record?
-    DevsInEachMonth.where({year: date.year, month: date.month}).increment!(:devs_in_end) if date
+    if started_on_changed?
+      old_started, new_started = started_on_change[0], started_on_change[1]
+      DevsInEachMonth.increment_devs(new_started) if new_started
+      DevsInEachMonth.decrement_devs(old_started) if old_started
+    end
+
+    if ended_on_changed?
+      old_ended, new_ended = ended_on_change[0], ended_on_change[1]
+      DevsInEachMonth.decrement_devs(new_ended) if new_ended
+      DevsInEachMonth.increment_devs(old_ended) if old_ended
+    end
   end
 
-  def self.churn
-    average = (started_in_month(year, month).count+ender_in_month(year, month).count)/2
-    ender_in_month(year, month).count/average
+  def self.churn(date)
+    average = (devs_started_this_month(year, month).count+devs_ended_this_month(year, month).count)/2
   end
 
   private

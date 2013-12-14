@@ -12,7 +12,7 @@ describe Job do
     it { should_not be_valid }
   end
 
-  describe ".started_on" do
+  describe ".devs_started_this_month" do
     Job.create(started_on: Date.new(2001, 02, 01), ended_on: Date.new(2001, 03, 01))
     Job.create(started_on: Date.new(2001, 02, 02), ended_on: Date.new(2001, 03, 02))
 
@@ -27,7 +27,7 @@ describe Job do
     end
   end
 
-  describe ".ended_on" do
+  describe ".devs_ended_this_month" do
     correct_month = Job.devs_ended_this_month(2001, 03)
 
     it 'returns dates within the month' do
@@ -40,5 +40,14 @@ describe Job do
     end
   end
 
+  describe ".update_month_count" do
+    date = Date.new(2001, 02, 01)
+    Job.create(started_on: date)
+    count_in_2001_02 = DevsInEachMonth.devs_on_month_end(date)
+
+    it 'update amount of devs in proper month' do
+     count_in_2001_02.should be_equal 3
+    end
+  end
 
 end

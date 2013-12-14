@@ -9,12 +9,14 @@ ActiveRecord::Schema.define do
     table.column :developer,  :string
     table.column :started_on, :date
     table.column :ended_on,   :date
-    table.column :status,     :string
+    # table.column :status,     :string
   end
 
- create_table :devs_in_each_month do |table|
+ create_table :devs_in_each_months do |table|
     table.column :year,    :integer
     table.column :month,    :integer
-    table.column :devs_in_end,    :integer, default: 0
+    table.column :hired,    :integer, default: 0
+    table.column :left,    :integer, default: 0
+    table.column :delta,    :integer, default: 0
   end
 end
